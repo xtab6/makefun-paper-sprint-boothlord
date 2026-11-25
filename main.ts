@@ -6,10 +6,8 @@
 // confirmed moves, and exits fast so the 5 open-position slots keep turning
 // over (the guardrail needs a >= 0.01 SOL round trip on >= 20 coins):
 //
-//   A. Momentum breakout: price up >= 10% from its first-seen price, after
-//      at least 5 trades (v4: strict bar — v1's +6%/3-trade chase filled
-//      late at the top; v2 showed dip-only is the better half, this tests
-//      whether a strong trend adds anything on top of it).
+//   A. Momentum breakout: DISABLED in v2 — dev grade showed chasing a +6%
+//      rise fills 2 slots late, at the top, and mean reversion eats it.
 //   B. Dip bounce: price peaked >= 10% above first-seen, fell >= 12% from
 //      that peak, then bounced >= 4% off the dip low. We buy the turn, not
 //      the falling knife.
@@ -37,16 +35,16 @@ const MIN_BUY_LAMPORTS = LAMPORTS_PER_SOL / 100n; // 0.01 SOL (guardrail floor)
 const BUY_SLIPPAGE_BPS = 2_000;
 const SELL_SLIPPAGE_BPS = 10_000;
 
-const MOMENTUM_TRADES = 5;
-const MOMENTUM_BPS = 1_000; // +10% vs first-seen price (v4: strict momentum back on)
+const MOMENTUM_TRADES = 3;
+const MOMENTUM_BPS = 60_000; // momentum entry disabled in v2: dip-bounce only (see below)
 const DIP_PEAK_BPS = 1_000; // peak >= +10% vs first-seen
 const DIP_DROP_BPS = 1_200; // fell >= 12% from the peak
-const DIP_BOUNCE_BPS = 400; // bounced >= 4% off the dip low (v2 setting)
+const DIP_BOUNCE_BPS = 400; // bounced >= 4% off the dip low
 
-const TAKE_PROFIT_BPS = 1_000; // +10% vs cost basis
+const TAKE_PROFIT_BPS = 800; // +8% vs cost basis (v5: tighter both sides)
 const TRAIL_ARM_BPS = 400; // trailing arms once peak is +4%
 const TRAIL_BPS = 200; // -2% off the peak since entry
-const STOP_BPS = 400; // -4% hard stop vs cost basis
+const STOP_BPS = 300; // -3% hard stop vs cost basis (v5: cut losers faster)
 const STALE_SLOTS = 2_000; // ~13 min with no progress: free the slot
 const STALE_BPS = 300; // stale exit unless already +3%
 
