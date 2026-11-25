@@ -39,13 +39,13 @@ const MOMENTUM_TRADES = 3;
 const MOMENTUM_BPS = 60_000; // momentum entry disabled in v2: dip-bounce only (see below)
 const DIP_PEAK_BPS = 1_000; // peak >= +10% vs first-seen
 const DIP_DROP_BPS = 1_200; // fell >= 12% from the peak
-const DIP_BOUNCE_BPS = 400; // bounced >= 4% off the dip low
+const DIP_BOUNCE_BPS = 600; // bounced >= 6% off the dip low (v3: stricter turn)
 
-const TAKE_PROFIT_BPS = 1_000; // +10% vs cost basis
-const TRAIL_ARM_BPS = 400; // trailing arms once peak is +4%
-const TRAIL_BPS = 200; // -2% off the peak since entry
-const STOP_BPS = 400; // -4% hard stop vs cost basis
-const STALE_SLOTS = 2_000; // ~13 min with no progress: free the slot
+const TAKE_PROFIT_BPS = 1_500; // +15% vs cost basis
+const TRAIL_ARM_BPS = 500; // trailing arms once peak is +5%
+const TRAIL_BPS = 250; // -2.5% off the peak since entry
+const STOP_BPS = 500; // -5% hard stop vs cost basis
+const STALE_SLOTS = 3_000; // ~20 min with no progress: free the slot
 const STALE_BPS = 300; // stale exit unless already +3%
 
 function priceOf(curve: {
@@ -174,6 +174,7 @@ await runBot({
         t.trades >= MOMENTUM_TRADES &&
         (price * 10_000n) / t.first >= 10_000n + BigInt(MOMENTUM_BPS);
       const dipBounce =
+        t.trades >= 5 &&
         (t.peak * 10_000n) / t.first >= 10_000n + BigInt(DIP_PEAK_BPS) &&
         (price * 10_000n) / t.peak <= 10_000n - BigInt(DIP_DROP_BPS) &&
         (price * 10_000n) / t.low >= 10_000n + BigInt(DIP_BOUNCE_BPS);
